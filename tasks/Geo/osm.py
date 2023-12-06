@@ -6,7 +6,7 @@ import numpy as np
 import folium
 
 class OpenStreetMap():
-    def __init__(self, osm_id = None, custom_shape = None, union = True, country = None, city = None, state = None, county = None, query = None):
+    def __init__(self, osm_id = None, country = None, city = None, state = None, county = None, query = None):
         """
         The function takes in a number of parameters, and uses them to query the Overpass API. The
         results are then stored in a dictionary called `self.metadata`
@@ -32,8 +32,6 @@ class OpenStreetMap():
                        "format" : "json"
                       }
         self.metadata = self._get_metadata()
-        self.custom_shape = custom_shape
-        self.union = union
         self.osm_id = osm_id
         self.shape_geo = self.get_geo_shape()
         
@@ -71,13 +69,6 @@ class OpenStreetMap():
                    }
         oms_geo_shape = dispatcher[self.shape_type](self.shape_coordinates)
         self.shape_geo = oms_geo_shape
-        
-        if self.custom_shape:
-            custom_shape = Polygon(self.custom_shape)
-            if self.union:
-                self.shape_geo = self.shape_geo.union(custom_shape)
-            else:
-                self.shape_geo = self.shape_geo.intersection(custom_shape)
         return self.shape_geo
                
     def get_geo_center_location(self, administrative = False):
@@ -148,4 +139,3 @@ class OpenStreetMap():
         #print(f"Se encontraron {len(self.centroids)} centroides")
         return centroids
     
-    def 
