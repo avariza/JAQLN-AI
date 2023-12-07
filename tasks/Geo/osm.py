@@ -1,7 +1,6 @@
 """Performs requests to the Open Street Maps API."""
-import requests, json, os, time
-from shapely.geometry import Polygon, Point, MultiPolygon
-from geo_utilities import m_to_km, km_to_degrees
+import requests, json
+from shapely.geometry import Polygon, MultiPolygon
 import numpy as np
 import folium
 
@@ -101,41 +100,3 @@ class OpenStreetMap():
                                 weight=5).add_to(m)
         poly = self.shape_geo
         return m
-    
-    def find_geo_centroids(self, radius, superposition = 0):
-        """
-        It creates a grid of points inside the city polygon, and returns the points that are inside the
-        polygon
-        
-        :param radius: The radius of the circle around each centroid
-        :param superposition: The amount of overlap between the circles, defaults to 0 (optional)
-        :return: A list of tuples with the latitude and longitude of the centroids
-        
-        Creates equidistant grid inside city polygon 
-        """
-        
-        centroids = []
-        
-        poligono = self.get_geo_shape()
-        boundingbox = poligono.bounds
-    
-        step = (radius*2) - superposition                   # meters
-        step_size =  km_to_degrees(m_to_km(step))          # decimals
-
-        min_lng = float(boundingbox[0])
-        min_lat = float(boundingbox[1])
-        max_lng = float(boundingbox[2])
-        max_lat = float(boundingbox[3])
-
-        for lat in np.arange(min_lat, max_lat, step_size):
-            for lng in np.arange(min_lng, max_lng, step_size):
-                centroid_p = Point(lng, lat)
-                centroid = (lat, lng)
-                if poligono.contains(centroid_p):
-                    centroids.append(centroid)
-
-                
-        self.centroids = centroids
-        #print(f"Se encontraron {len(self.centroids)} centroides")
-        return centroids
-    
